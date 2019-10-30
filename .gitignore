@@ -12,3 +12,5 @@ build/
 MANIFEST.MF
 README.html
 /research/microservices-arquillian-managed-test.iml
+*.iml
+
