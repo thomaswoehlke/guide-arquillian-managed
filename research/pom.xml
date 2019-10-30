@@ -7,11 +7,14 @@
     <parent>
         <groupId>net.wasdev.wlp.maven.parent</groupId>
         <artifactId>liberty-maven-app-parent</artifactId>
-        <version>RELEASE</version>
+        <version>3.0.M1</version>
+        <!--
+        <version>2.0</version>
+        -->
     </parent>
 
     <groupId>io.openliberty.guides</groupId>
-    <artifactId>microservices-arquillian-managed-test-research</artifactId>
+    <artifactId>microservices-arquillian-managed-test</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
 
@@ -25,6 +28,7 @@
         <testServerHttpsPort>9443</testServerHttpsPort>
         <package.file>${project.build.directory}/${app.name}.zip</package.file>
         <packaging.type>usr</packaging.type>
+        <liberty.runtime.version>19.0.0.9</liberty.runtime.version>
     </properties>
 
     <dependencyManagement>
@@ -32,7 +36,7 @@
             <dependency>
                 <groupId>io.openliberty.features</groupId>
                 <artifactId>features-bom</artifactId>
-                <version>RELEASE</version>
+                <version>19.0.0.9</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -131,16 +135,29 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>3.2.2</version>
+                <version>3.2.3</version>
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                     <packagingExcludes>pom.xml</packagingExcludes>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>war-before-integration-test</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>war</goal>
+                        </goals>
+                        <configuration>
+                            <failOnMissingWebXml>false</failOnMissingWebXml>
+                            <packagingExcludes>pom.xml</packagingExcludes>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>3.0.0-M1</version>
+                <version>3.0.0-M3</version>
                 <executions>
                     <execution>
                         <id>failsafe-integration-test</id>
@@ -172,20 +189,29 @@
                 </configuration>
             </plugin>
             <plugin>
+                <!--
                 <groupId>net.wasdev.wlp.maven.plugins</groupId>
+                -->
+                <groupId>io.openliberty.tools</groupId>
                 <artifactId>liberty-maven-plugin</artifactId>
+                <!--
+                <version>3.0.1</version>
+                -->
+                <version>3.1</version>
                 <extensions>true</extensions>
                 <!-- Specify configuration, executions for liberty-maven-plugin -->
                 <configuration>
                     <serverName>ArquillianManagedServer</serverName>
-                    <assemblyArtifact>
+                    <runtimeArtifact>
                         <groupId>io.openliberty</groupId>
                         <artifactId>openliberty-runtime</artifactId>
                         <version>19.0.0.9</version>
                         <type>zip</type>
-                    </assemblyArtifact>
-                    <configFile>src/main/liberty/config/server.xml</configFile>
+                    </runtimeArtifact>
+                    <serverXmlFile>src/main/liberty/config/server.xml</serverXmlFile>
+
                     <packageFile>${package.file}</packageFile>
+
                     <include>${packaging.type}</include>
                     <bootstrapProperties>
                         <default.http.port>${testServerHttpPort}</default.http.port>
