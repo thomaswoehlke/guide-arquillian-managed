@@ -128,6 +128,31 @@
             <artifactId>shrinkwrap-api</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.jboss.shrinkwrap</groupId>
+            <artifactId>shrinkwrap-impl-base</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.arquillian.protocol</groupId>
+            <artifactId>arquillian-protocol-servlet</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.arquillian.container</groupId>
+            <artifactId>arquillian-container-impl-base</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.arquillian.container</groupId>
+            <artifactId>arquillian-container-test-impl-base</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.arquillian.junit</groupId>
+            <artifactId>arquillian-junit-container</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.arquillian.junit</groupId>
+            <artifactId>arquillian-junit-standalone</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -142,8 +167,19 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <id>war-before-integration-test</id>
-                        <phase>process-classes</phase>
+                        <id>make-love-not-war</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>war</goal>
+                        </goals>
+                        <configuration>
+                            <failOnMissingWebXml>false</failOnMissingWebXml>
+                            <packagingExcludes>pom.xml</packagingExcludes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>war-what-is-is-good-for</id>
+                        <phase>pre-integration-test</phase>
                         <goals>
                             <goal>war</goal>
                         </goals>
@@ -169,6 +205,10 @@
                             <includes>
                                 <include>**/it/**/*.java</include>
                             </includes>
+                            <systemProperties>
+                                <wlp.home>${project.build.directory}/liberty/wlp</wlp.home>
+                                <wlpHome>${project.build.directory}/liberty/wlp</wlpHome>
+                            </systemProperties>
                         </configuration>
                     </execution>
                     <execution>
@@ -216,8 +256,22 @@
                     <bootstrapProperties>
                         <default.http.port>${testServerHttpPort}</default.http.port>
                         <default.https.port>${testServerHttpsPort}</default.https.port>
+                        <deployType>dropins</deployType>
+                        <appDeployTimeout>600</appDeployTimeout>
+                        <appUndeployTimeout>300</appUndeployTimeout>
+                        <deploymentExportPath>target/</deploymentExportPath>
+                        <instantiationTimeoutInSeconds>300</instantiationTimeoutInSeconds>
                     </bootstrapProperties>
                     <skipTestServer>true</skipTestServer>
+                    <arquillianProperties>
+                        <wlpHome>${project.build.directory}/liberty/wlp/usr/servers/ArquillianManagedServer</wlpHome>
+                        <deployType>dropins</deployType>
+                        <appDeployTimeout>600</appDeployTimeout>
+                        <appUndeployTimeout>300</appUndeployTimeout>
+                        <deploymentExportPath>target/</deploymentExportPath>
+                        <instantiationTimeoutInSeconds>300</instantiationTimeoutInSeconds>
+                    </arquillianProperties>
+                    <skipIfArquillianXmlExists>false</skipIfArquillianXmlExists>
                 </configuration>
                 <executions>
                     <execution>
@@ -240,6 +294,17 @@
                         <goals>
                             <goal>configure-arquillian</goal>
                         </goals>
+                        <configuration>
+                            <arquillianProperties>
+                                <wlpHome>${project.build.directory}/liberty/wlp</wlpHome>
+                                <deployType>dropins</deployType>
+                                <appDeployTimeout>600</appDeployTimeout>
+                                <appUndeployTimeout>300</appUndeployTimeout>
+                                <deploymentExportPath>target/</deploymentExportPath>
+                                <instantiationTimeoutInSeconds>300</instantiationTimeoutInSeconds>
+                            </arquillianProperties>
+                            <skipIfArquillianXmlExists>false</skipIfArquillianXmlExists>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
